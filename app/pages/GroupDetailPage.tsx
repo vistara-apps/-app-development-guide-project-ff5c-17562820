@@ -1,9 +1,9 @@
-
 "use client";
 
 import { useState } from "react";
 import { FrameHeader } from "../components/FrameHeader";
 import { ExpenseItem } from "../components/ExpenseItem";
+import { PaymentModal } from "../components/PaymentModal";
 import { Button } from "../components/ui/Button";
 import { Modal } from "../components/ui/Modal";
 import { Input } from "../components/ui/Input";
@@ -14,6 +14,7 @@ import { useGroups } from "../hooks/useGroups";
 import { mockGroups, currentUser } from "../utils/mockData";
 import { formatCurrency } from "../utils/formatting";
 import { Plus, Users, DollarSign } from "lucide-react";
+import { Expense, Settlement } from "../lib/types";
 
 interface GroupDetailPageProps {
   groupId: string;
@@ -21,11 +22,22 @@ interface GroupDetailPageProps {
 }
 
 export function GroupDetailPage({ groupId, onBack }: GroupDetailPageProps) {
-  const { expenses, loading, addExpense, getUserById } = useExpenses(groupId);
+  const { 
+    expenses, 
+    loading, 
+    addExpense, 
+    getUserById, 
+    addSettlement,
+    updateSettlementStatus,
+    getSettlementsByExpenseId,
+    hasUserSettledExpense
+  } = useExpenses(groupId);
   const { calculateGroupBalance } = useGroups();
   const [showAddExpense, setShowAddExpense] = useState(false);
   const [expenseDescription, setExpenseDescription] = useState("");
   const [expenseAmount, setExpenseAmount] = useState("");
+  const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
   
   const group = mockGroups.find(g => g.groupId === groupId);
   const groupBalance = calculateGroupBalance(groupId);
@@ -54,9 +66,44 @@ export function GroupDetailPage({ groupId, onBack }: GroupDetailPageProps) {
     }
   };
 
-  const handleSettle = (expenseId: string) => {
-    // TODO: Implement settlement
-    console.log("Settling expense:", expenseId);
+  const handleSettle = (expense: Expense) => {
+    setSelectedExpense(expense);
+    setShowPaymentModal(true);
+  };
+  
+  const handlePaymentComplete = (paymentData: {
+    approvalTxHash: string;
+    paymentTxHash: string;
+  }) => {
+    if (!selectedExpense) return;
+    
+    const paidByUser = getUserById(selectedExpense.paidByUserId);
+    if (!paidByUser) return;
+    
+    const userSplit = selectedExpense.splits.find(
+      split => split.userId === currentUser.userId
+    );
+    if (!userSplit) return;
+    
+    // Create a new settlement
+    const settlement = addSettlement({
+      groupId,
+      fromUserId: currentUser.userId,
+      fromUser: currentUser,
+      toUserId: paidByUser.userId,
+      toUser: paidByUser,
+      amount: userSplit.amount,
+      status: 'completed',
+      approvalTxHash: paymentData.approvalTxHash,
+      paymentTxHash: paymentData.paymentTxHash,
+      expenseId: selectedExpense.expenseId
+    });
+    
+    // Close the payment modal after a short delay
+    setTimeout(() => {
+      setShowPaymentModal(false);
+      setSelectedExpense(null);
+    }, 2000);
   };
 
   if (!group) {
@@ -80,15 +127,25 @@ export function GroupDetailPage({ groupId, onBack }: GroupDetailPageProps) {
               </Button>
             </div>
           ) : (
-            expenses.map((expense) => (
-              <ExpenseItem
-                key={expense.expenseId}
-                expense={expense}
-                paidByUser={getUserById(expense.paidByUserId)!}
-                currentUserId={currentUser.userId}
-                onSettle={() => handleSettle(expense.expenseId)}
-              />
-            ))
+            expenses.map((expense) => {
+              const paidByUser = getUserById(expense.paidByUserId)!;
+              const userSettlements = getSettlementsByExpenseId(expense.expenseId)
+                .filter(s => s.fromUserId === currentUser.userId);
+              const userSettlement = userSettlements.length > 0 ? userSettlements[0] : undefined;
+              const isSettling = selectedExpense?.expenseId === expense.expenseId && showPaymentModal;
+              
+              return (
+                <ExpenseItem
+                  key={expense.expenseId}
+                  expense={expense}
+                  paidByUser={paidByUser}
+                  currentUserId={currentUser.userId}
+                  onSettle={() => handleSettle(expense)}
+                  userSettlement={userSettlement}
+                  isSettling={isSettling}
+                />
+              );
+            })
           )}
         </div>
       )
@@ -246,6 +303,21 @@ export function GroupDetailPage({ groupId, onBack }: GroupDetailPageProps) {
           </div>
         </div>
       </Modal>
+      
+      {/* Payment Modal */}
+      {selectedExpense && (
+        <PaymentModal
+          isOpen={showPaymentModal}
+          onClose={() => setShowPaymentModal(false)}
+          expense={selectedExpense}
+          paidByUser={getUserById(selectedExpense.paidByUserId)!}
+          currentUser={currentUser}
+          userSplitAmount={
+            selectedExpense.splits.find(split => split.userId === currentUser.userId)?.amount || 0
+          }
+          onPaymentComplete={handlePaymentComplete}
+        />
+      )}
     </div>
   );
 }

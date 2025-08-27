@@ -1,5 +1,4 @@
-
-import { User, Group, Expense, Settlement } from "../types";
+import { User, Group, Expense, Settlement, PaymentStatus } from "../types";
 
 export const mockUsers: User[] = [
   {
@@ -100,6 +99,24 @@ export const mockExpenses: Expense[] = [
       { userId: "1", amount: 44.995 },
       { userId: "4", amount: 44.995 },
     ]
+  }
+];
+
+export const mockSettlements: Settlement[] = [
+  {
+    settlementId: "settlement1",
+    groupId: "group1",
+    fromUserId: "3",
+    fromUser: mockUsers[2],
+    toUserId: "1",
+    toUser: mockUsers[0],
+    amount: 80.00,
+    status: "completed",
+    approvalTxHash: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+    paymentTxHash: "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
+    createdAt: new Date("2024-01-18").toISOString(),
+    updatedAt: new Date("2024-01-18").toISOString(),
+    expenseId: "exp1"
   }
 ];
 

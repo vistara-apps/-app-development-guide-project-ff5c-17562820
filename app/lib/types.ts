@@ -1,4 +1,3 @@
-
 export interface User {
   userId: string;
   farcasterId?: string;
@@ -37,6 +36,14 @@ export interface ExpenseSplit {
   settled: boolean;
 }
 
+export type PaymentStatus = 
+  | 'initial' 
+  | 'approving' 
+  | 'approved' 
+  | 'paying' 
+  | 'completed' 
+  | 'failed';
+
 export interface Settlement {
   settlementId: string;
   groupId: string;
@@ -45,9 +52,13 @@ export interface Settlement {
   toUserId: string;
   toUser: User;
   amount: number;
-  status: 'pending' | 'completed' | 'failed';
-  txHash?: string;
+  status: PaymentStatus;
+  approvalTxHash?: string;
+  paymentTxHash?: string;
+  errorMessage?: string;
   createdAt: string;
+  updatedAt?: string;
+  expenseId?: string;
 }
 
 export interface GroupBalance {
