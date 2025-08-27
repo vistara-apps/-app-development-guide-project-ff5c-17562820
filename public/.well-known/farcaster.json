@@ -10,14 +10,14 @@
     "subtitle": "Built with Zara",
     "description": "FlowFi is a Base Mini App built with Zara.",
     "iconUrl": "https://0co.to/images/zara-2.png",
-    "homeUrl": "https://ff5c3f75-021f-4657-a63c-ed51ab406ae5.vistara.dev",
-    "splashImageUrl": "https://dummyimage.com/200x200/0a0b0d/ffffff.png&text=Splash",
+    "homeUrl": "https://ff5c3f75021f4657a63ced51ab406ae5-xgar-cvedd25ec-vistara.vercel.app",
+    "splashImageUrl": "https://ff5c3f75021f4657a63ced51ab406ae5-xgar-cvedd25ec-vistara.vercel.app/splash.png",
     "splashBackgroundColor": "#000000",
-    "heroImageUrl": "https://dummyimage.com/1200x628/0a0b0d/ffffff.png&text=Hero",
+    "heroImageUrl": "https://ff5c3f75021f4657a63ced51ab406ae5-xgar-cvedd25ec-vistara.vercel.app/image.png",
     "tagline": "FlowFi",
     "screenshotUrls": [
-      "https://dummyimage.com/1200x628/0a0b0d/ffffff.png&text=Shot1",
-      "https://dummyimage.com/1200x628/0a0b0d/ffffff.png&text=Shot2"
+      "https://ff5c3f75021f4657a63ced51ab406ae5-xgar-cvedd25ec-vistara.vercel.app/screenshot.png",
+      "https://ff5c3f75021f4657a63ced51ab406ae5-xgar-cvedd25ec-vistara.vercel.app/screenshot.png"
     ],
     "primaryCategory": "social",
     "tags": [
@@ -25,6 +25,6 @@
       "miniapp",
       "onchainkit"
     ],
-    "webhookUrl": "https://ff5c3f75-021f-4657-a63c-ed51ab406ae5.vistara.dev/api/webhook"
+    "webhookUrl": "https://ff5c3f75021f4657a63ced51ab406ae5-xgar-cvedd25ec-vistara.vercel.app/api/webhook"
   }
 }
