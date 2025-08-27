@@ -1,24 +1,45 @@
-
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Group, Expense, Balance } from "../types";
 import { mockGroups, mockExpenses, currentUser } from "../utils/mockData";
 
 export function useGroups() {
   const [groups, setGroups] = useState<Group[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expenses, setExpenses] = useState<Expense[]>(mockExpenses);
 
   useEffect(() => {
     // Simulate API call
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       setGroups(mockGroups);
       setLoading(false);
     }, 500);
+    
+    return () => clearTimeout(timer);
   }, []);
 
-  const calculateGroupBalance = (groupId: string): number => {
-    const groupExpenses = mockExpenses.filter(exp => exp.groupId === groupId);
+  const addGroup = useCallback((newGroup: Group) => {
+    setGroups(prevGroups => [...prevGroups, newGroup]);
+    return newGroup;
+  }, []);
+
+  const updateGroup = useCallback((groupId: string, updates: Partial<Group>) => {
+    setGroups(prevGroups => 
+      prevGroups.map(group => 
+        group.groupId === groupId ? { ...group, ...updates } : group
+      )
+    );
+  }, []);
+
+  const deleteGroup = useCallback((groupId: string) => {
+    setGroups(prevGroups => prevGroups.filter(group => group.groupId !== groupId));
+    // Also remove associated expenses
+    setExpenses(prevExpenses => prevExpenses.filter(expense => expense.groupId !== groupId));
+  }, []);
+
+  const calculateGroupBalance = useCallback((groupId: string): number => {
+    const groupExpenses = expenses.filter(exp => exp.groupId === groupId);
     let balance = 0;
 
     groupExpenses.forEach(expense => {
@@ -34,11 +55,14 @@ export function useGroups() {
     });
 
     return balance;
-  };
+  }, [expenses]);
 
   return {
     groups,
     loading,
+    addGroup,
+    updateGroup,
+    deleteGroup,
     calculateGroupBalance,
   };
 }
