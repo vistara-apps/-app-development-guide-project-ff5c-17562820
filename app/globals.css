@@ -1,0 +1,73 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --primary: 210 70% 50%;
+    --accent: 160 70% 45%;
+    --bg: 220 15% 95%;
+    --surface: 220 15% 100%;
+    --text-primary: 220 15% 15%;
+    --text-secondary: 220 15% 45%;
+    --border: 220 15% 85%;
+  }
+  
+  body {
+    @apply bg-bg text-text-primary;
+    font-family: system-ui, -apple-system, sans-serif;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary hover:bg-primary/90 text-white px-4 py-3 rounded-md transition-all duration-300 font-medium;
+  }
+  
+  .btn-secondary {
+    @apply bg-surface hover:bg-border text-text-primary px-4 py-3 rounded-md transition-all duration-300 font-medium border border-border;
+  }
+  
+  .btn-outline {
+    @apply bg-transparent hover:bg-surface text-text-primary px-4 py-3 rounded-md transition-all duration-300 font-medium border border-border;
+  }
+  
+  .btn-destructive {
+    @apply bg-red-500 hover:bg-red-600 text-white px-4 py-3 rounded-md transition-all duration-300 font-medium;
+  }
+  
+  .card {
+    @apply bg-surface border border-border rounded-lg p-6 shadow-card;
+  }
+  
+  .input-field {
+    @apply bg-surface border border-border rounded-md px-3 py-2 text-text-primary placeholder:text-text-secondary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20;
+  }
+  
+  .display {
+    @apply text-4xl font-bold text-text-primary;
+  }
+  
+  .heading {
+    @apply text-2xl font-semibold text-text-primary;
+  }
+  
+  .body {
+    @apply text-base leading-7 text-text-primary;
+  }
+  
+  .caption {
+    @apply text-sm text-text-secondary;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
