@@ -1,26 +1,39 @@
+
 "use client";
 
-import { cn } from "../../lib/utils";
-import { forwardRef } from "react";
+import { clsx } from "clsx";
 
-export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
+interface InputProps {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  type?: string;
+  className?: string;
+  label?: string;
+}
 
-const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, ...props }, ref) => {
-    return (
+export function Input({ 
+  value, 
+  onChange, 
+  placeholder, 
+  type = "text",
+  className,
+  label 
+}: InputProps) {
+  return (
+    <div className="space-y-2">
+      {label && (
+        <label className="block text-sm font-medium text-text-primary">
+          {label}
+        </label>
+      )}
       <input
         type={type}
-        className={cn(
-          "flex h-10 w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-text-primary placeholder:text-text-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
-          className
-        )}
-        ref={ref}
-        {...props}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className={clsx("input-field w-full", className)}
       />
-    );
-  }
-);
-
-Input.displayName = "Input";
-
-export { Input };
+    </div>
+  );
+}

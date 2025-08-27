@@ -1,39 +1,54 @@
+
 "use client";
 
-import { cn } from "../../lib/utils";
-import { forwardRef } from "react";
+import { clsx } from "clsx";
+import { ReactNode } from "react";
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "destructive" | "outline";
-  size?: "sm" | "md" | "lg";
+interface ButtonProps {
+  children: ReactNode;
+  onClick?: () => void;
+  variant?: 'primary' | 'secondary' | 'outline' | 'destructive';
+  size?: 'sm' | 'md' | 'lg';
+  disabled?: boolean;
+  className?: string;
 }
 
-const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = "primary", size = "md", ...props }, ref) => {
-    return (
-      <button
-        className={cn(
-          "inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
-          {
-            "bg-primary text-white hover:bg-primary/90": variant === "primary",
-            "bg-surface text-text-primary border border-border hover:bg-border/50": variant === "secondary",
-            "bg-red-500 text-white hover:bg-red-600": variant === "destructive",
-            "border border-border bg-transparent hover:bg-surface": variant === "outline",
-          },
-          {
-            "h-8 px-3 text-sm": size === "sm",
-            "h-10 px-4": size === "md",
-            "h-12 px-6 text-lg": size === "lg",
-          },
-          className
-        )}
-        ref={ref}
-        {...props}
-      />
-    );
-  }
-);
+export function Button({ 
+  children, 
+  onClick, 
+  variant = 'primary', 
+  size = 'md',
+  disabled = false,
+  className 
+}: ButtonProps) {
+  const baseClasses = "inline-flex items-center justify-center font-medium transition-all duration-base rounded-md";
+  
+  const variantClasses = {
+    primary: "btn-primary",
+    secondary: "btn-secondary",
+    outline: "btn-outline",
+    destructive: "btn-destructive"
+  };
+  
+  const sizeClasses = {
+    sm: "px-3 py-2 text-sm",
+    md: "px-4 py-3 text-base",
+    lg: "px-6 py-4 text-lg"
+  };
 
-Button.displayName = "Button";
-
-export { Button };
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={clsx(
+        baseClasses,
+        variantClasses[variant],
+        sizeClasses[size],
+        disabled && "opacity-50 cursor-not-allowed",
+        className
+      )}
+    >
+      {children}
+    </button>
+  );
+}

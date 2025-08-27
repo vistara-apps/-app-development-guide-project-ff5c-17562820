@@ -1,50 +1,59 @@
+
 "use client";
 
-import { cn } from "../lib/utils";
+import { Group, Balance } from "../types";
+import { UserAvatar } from "./ui/UserAvatar";
+import { Users, DollarSign } from "lucide-react";
+import { formatCurrency } from "../utils/formatting";
 
 interface GroupCardProps {
-  groupName: string;
-  memberCount: number;
-  balance: number;
-  variant?: "default" | "compact";
+  group: Group;
+  balance?: number;
+  variant?: 'default' | 'compact';
   onClick?: () => void;
-  className?: string;
 }
 
-export function GroupCard({ 
-  groupName, 
-  memberCount, 
-  balance, 
-  variant = "default",
-  onClick,
-  className 
-}: GroupCardProps) {
+export function GroupCard({ group, balance = 0, variant = 'default', onClick }: GroupCardProps) {
+  const isCompact = variant === 'compact';
+  
   return (
     <div 
-      className={cn(
-        "bg-surface border border-border rounded-lg p-4 shadow-card cursor-pointer hover:shadow-lg transition-shadow",
-        {
-          "p-3": variant === "compact"
-        },
-        className
-      )}
+      className={`card hover:shadow-lg transition-all duration-base cursor-pointer ${isCompact ? 'p-3' : 'p-4'}`}
       onClick={onClick}
     >
-      <div className="flex justify-between items-start">
-        <div>
-          <h3 className="text-2xl font-semibold text-text-primary mb-1">{groupName}</h3>
-          <p className="text-sm text-text-secondary">{memberCount} members</p>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-3">
+          <div className="flex -space-x-2">
+            {group.members.slice(0, 3).map((member, index) => (
+              <UserAvatar 
+                key={member.userId} 
+                user={member} 
+                size={isCompact ? "sm" : "md"}
+                variant="group"
+              />
+            ))}
+            {group.members.length > 3 && (
+              <div className={`${isCompact ? 'w-8 h-8 text-xs' : 'w-10 h-10 text-sm'} rounded-full bg-border text-text-secondary flex items-center justify-center font-medium`}>
+                +{group.members.length - 3}
+              </div>
+            )}
+          </div>
+          <div>
+            <h3 className={isCompact ? "text-base font-medium" : "text-heading"}>{group.groupName}</h3>
+            <div className="flex items-center text-caption space-x-2">
+              <Users size={14} />
+              <span>{group.members.length} members</span>
+            </div>
+          </div>
         </div>
         <div className="text-right">
-          <p className="text-base leading-7 font-medium text-text-primary">
-            ${Math.abs(balance).toFixed(2)}
-          </p>
-          <p className={cn(
-            "text-sm",
-            balance > 0 ? "text-green-600" : balance < 0 ? "text-red-600" : "text-text-secondary"
-          )}>
-            {balance > 0 ? "You're owed" : balance < 0 ? "You owe" : "Settled"}
-          </p>
+          <div className={`flex items-center ${balance > 0 ? 'text-accent' : balance < 0 ? 'text-red-500' : 'text-text-secondary'}`}>
+            <DollarSign size={16} />
+            <span className="font-medium">{formatCurrency(Math.abs(balance))}</span>
+          </div>
+          <div className="text-caption">
+            {balance > 0 ? 'You are owed' : balance < 0 ? 'You owe' : 'Settled up'}
+          </div>
         </div>
       </div>
     </div>

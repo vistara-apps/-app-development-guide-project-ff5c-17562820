@@ -14,8 +14,8 @@ export function Providers(props: { children: ReactNode }) {
         appearance: {
           mode: "auto",
           theme: "flowsplit-theme",
-          name: "FlowSplit",
-          logo: "/icon.png",
+          name: process.env.NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME || "FlowSplit",
+          logo: process.env.NEXT_PUBLIC_ICON_URL,
         },
       }}
     >
